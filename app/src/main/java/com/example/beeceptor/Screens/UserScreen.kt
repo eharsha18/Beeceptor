@@ -41,7 +41,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.bumptech.glide.load.resource.bitmap.CenterInside
 import com.example.anilcomposeex.hiltMVVMCOMPOSE.modals.UserItem
 import com.example.anilcomposeex.hiltMVVMCOMPOSE.viewmodels.UserViewModel
 import kotlinx.coroutines.channels.awaitClose
@@ -51,18 +50,94 @@ import kotlinx.coroutines.flow.callbackFlow
 
 @Composable
 fun NetworkScreen(navController: NavController) {
-
-
-    /*Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        Text(
-            text = if (isConnected.value) "Connected" else "Unavailable",
-            fontSize = 48.sp,
-            fontWeight = FontWeight.Bold
-        )
-    }*/
     UserListScreen(navController)
 }
 
+
+@Composable
+fun UserListScreen(navController: NavController) {
+    val connectionState by rememberConnectivityState()
+
+    val isConnected = remember(connectionState) {
+        derivedStateOf {
+            connectionState === NetworkConnectionState.Available
+        }
+    }
+    if( isConnected.value) {
+        val userViewModel: UserViewModel = hiltViewModel()
+        val userdata = userViewModel.userItem.collectAsState()
+        if (userdata.value.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "Loading", style = MaterialTheme.typography.headlineMedium)
+            }
+        } else {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(5.dp)) {
+                userdata.value?.let { results ->
+                    items(results.size) { index ->
+                        UserItemScreenCard(userItem = results[index], navController)
+                    }
+                }
+            }
+        }
+    } else {
+        Box(modifier = Modifier.fillMaxSize(1f),
+            contentAlignment = Alignment.Center){
+            Text(text = "Please check your InternetConnection", textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.headlineMedium)
+        }
+    }
+}
+
+@Composable
+fun UserItemScreenCard(userItem: UserItem, navController: NavController) {
+    val context = LocalContext.current
+    Card(
+        modifier = Modifier.fillMaxWidth().clickable{
+            Toast.makeText(context,"I am "+userItem.name, Toast.LENGTH_LONG).show()
+            navController.navigate(userItem)
+        },
+        shape = MaterialTheme.shapes.medium
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            userItem.photo?.let { url ->
+                AsyncImage(
+                    model = url,
+                    contentDescription = "Descriptive text for the image",
+                    modifier = Modifier.size(80.dp)
+                        .background(Color.Transparent)
+                        .clip(RoundedCornerShape(16.dp)), // Adjust as needed
+                )
+            }
+
+            Column(
+                modifier = Modifier.weight(1f) // Text takes remaining space
+            ) {
+                Text(
+                    text =  userItem.name,
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    text = userItem.email,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = userItem.phone,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+    }
+}
 sealed interface NetworkConnectionState {
     data object Available : NetworkConnectionState
     data object Unavailable : NetworkConnectionState
@@ -124,95 +199,6 @@ fun rememberConnectivityState(): State<NetworkConnectionState> {
     return produceState(initialValue = context.currentConnectivityState) {
         context.observeConnectivityAsFlow().collect {
             value = it
-        }
-    }
-}
-
-@Composable
-fun UserListScreen(navController: NavController) {
-    val connectionState by rememberConnectivityState()
-
-    val isConnected = remember(connectionState) {
-        derivedStateOf {
-            connectionState === NetworkConnectionState.Available
-        }
-    }
-    if( isConnected.value) {
-        val userViewModel: UserViewModel = hiltViewModel()
-        val userdatalist = userViewModel.userItem.collectAsState()
-        if (userdatalist.value.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize(1f),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(text = "Loading", style = MaterialTheme.typography.headlineMedium)
-            }
-        } else {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(5.dp)) {
-                userdatalist.value?.let { results ->
-                    items(results.size) { index ->
-                        UserItemScreenCard(userItem = results[index], navController)
-                    }
-                }
-            }
-        }
-    } else {
-
-        Box(modifier = Modifier.fillMaxSize(1f),
-            contentAlignment = Alignment.Center){
-            Text(text = "Please check your InternetConnection", textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.headlineMedium)
-        }
-
-    }
-}
-
-
-@Composable
-fun UserItemScreenCard(userItem: UserItem, navController: NavController) {
-    val context = LocalContext.current
-    Card(
-        modifier = Modifier.fillMaxWidth().clickable{
-            Toast.makeText(context,"I am "+userItem.name, Toast.LENGTH_LONG).show()
-            navController.navigate(userItem)
-        },
-        shape = MaterialTheme.shapes.medium // Use MaterialTheme's shape for consistency
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            userItem.photo.let { url ->
-                AsyncImage(
-                    model = url,
-                    contentDescription = "Descriptive text for the image",
-                    modifier = Modifier.size(80.dp)
-                        .background(Color.Transparent)
-                        .clip(RoundedCornerShape(16.dp)), // Adjust as needed
-
-                )
-            }
-
-            Column(
-                modifier = Modifier.weight(1f) // Text takes remaining space
-            ) {
-                Text(
-                    text =  userItem.name,
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Text(
-                    text = userItem.email,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = userItem.phone,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
         }
     }
 }

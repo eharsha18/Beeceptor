@@ -67,7 +67,6 @@ class MainActivity : ComponentActivity() {
                         topBar = {
                             val currentBackStackEntry by navController.currentBackStackEntryAsState()
                             val currentRoute = currentBackStackEntry?.destination?.route
-                            //var screenName = currentRoute
                             val screenName = currentRoute?.let {
                                 if (it.contains("home")) {
                                     "Home"
@@ -97,7 +96,6 @@ class MainActivity : ComponentActivity() {
 
                             NavHost(navController, startDestination = "home") {
                                 composable(route = "home") {
-
                                     NetworkScreen(navController)
                                 }
                                 composable<UserItem> { backStackEntry ->
@@ -114,21 +112,4 @@ class MainActivity : ComponentActivity() {
 
         }
     }
-
-    /*@Composable
-    fun App(navController: NavController) {
-        //val navController = rememberNavController()
-        *//*NavHost(navController, startDestination = "userList") {
-            composable(route = "userList") {
-                //UserListScreen(navController)
-                NetworkScreen(navController)
-            }
-            composable<UserItem> { backStackEntry ->
-                val user: UserItem = backStackEntry.toRoute()
-                DetailsScreen(user)
-            }
-
-        }*//*
-
-    }*/
 }

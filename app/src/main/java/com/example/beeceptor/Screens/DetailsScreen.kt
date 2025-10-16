@@ -36,7 +36,7 @@ fun DetailsScreen(userItem:UserItem) {
                 contentDescription = "User image",
                 modifier = Modifier.fillMaxWidth()
                     .height(300.dp),
-                contentScale = ContentScale.FillBounds
+                contentScale = ContentScale.Fit
             )
         } ?: run {
             Text("Loading image...")
