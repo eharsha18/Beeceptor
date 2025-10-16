@@ -75,8 +75,8 @@ fun DetailsScreen(userItem:UserItem) {
             color = Color.Black,
             modifier = Modifier.padding(0.dp, 10.dp)
         )
-//state
 
+        //state
         Text(
             text = stringResource(R.string.state)+" "+userItem.state,
             fontSize = 18.sp,
@@ -98,64 +98,4 @@ fun DetailsScreen(userItem:UserItem) {
             modifier = Modifier.padding(0.dp, 10.dp)
         )
     }
-
 }
-
-@Composable
-fun detailsItem() {
-
-    Box (modifier = Modifier.padding(4.dp)
-        .size(16.dp)
-        ){
-        Text(text = " hari",
-            fontSize = 18.sp,
-            color = Color.Black,
-            modifier = Modifier.padding(0.dp,20.dp))
-    }
-}
-
-/*@Composable
-fun UserItemScreenCard(userItem: UserItem) {
-    val context = LocalContext.current
-    Card(
-        modifier = Modifier.fillMaxWidth().clickable{
-            Toast.makeText(context,"I am "+userItem.name, Toast.LENGTH_LONG).show()
-        },
-        shape = MaterialTheme.shapes.medium // Use MaterialTheme's shape for consistency
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            userItem.photo?.let { url ->
-                AsyncImage(
-                    model = url,
-                    contentDescription = "Descriptive text for the image",
-                    modifier = Modifier.size(80.dp), // Adjust as needed
-                )
-            } ?: run {
-                // Display a placeholder or loading indicator while waiting for the URL
-                Text("Loading image...")
-            }
-
-            Column(
-                modifier = Modifier.weight(1f) // Text takes remaining space
-            ) {
-                Text(
-                    text =  userItem.name,
-                    style = MaterialTheme.typography.bodyMedium // Use MaterialTheme's typography
-                )
-                Text(
-                    text = userItem.email,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = userItem.phone,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-        }
-    }
-}*/
