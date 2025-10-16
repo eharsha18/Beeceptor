@@ -15,7 +15,9 @@ class UserRepository @Inject constructor(private val userApi: UserApi) {
     suspend fun getUserItem() {
             val result = userApi.getUsers()
             if (result.isSuccessful && result.body() != null) {
-                _userItem.emit(result.body()!!)
+                result.body()?.let{
+                    _userItem.emit(it)
+                }
             }
     }
 }
